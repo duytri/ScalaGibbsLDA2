@@ -57,6 +57,37 @@ object Model2File {
   }
 
   /**
+   * Create knowledge source from word-topic distribution
+   */
+  def createKnowlegdeSource(filename: String, phi: Array[Array[Double]], K: Int, V: Int, data: LDADataset): Boolean = {
+    val writer = new BufferedWriter(new FileWriter(filename))
+    val topwords = V / K
+
+    for (k <- 0 until K) {
+      var wordsProbsList = new ArrayBuffer[(Int, Double)]
+      for (w <- 0 until V) {
+        wordsProbsList.append((w, phi(k)(w)))
+      } //end foreach word
+
+      //print topic				
+      writer.write(k.toString) //name (number) of topic
+      wordsProbsList = wordsProbsList.sortWith(_._2 > _._2)
+
+      for (i <- 0 until topwords) {
+        if (data.localDict.contains(wordsProbsList(i)._1)) {
+          val word = data.localDict.getWord(wordsProbsList(i)._1)
+
+          writer.write(" " + word + " " + (wordsProbsList(i)._2 * 100000).round.toString)
+        }
+      }
+      writer.write("\n")
+    } //end foreach topic			
+
+    writer.close
+    true
+  }
+
+  /**
    * Save other information of this model
    */
   def saveModelOthers(filename: String, alpha: Double, beta: Double, K: Int, M: Int, V: Int, liter: Int): Boolean = {
@@ -88,14 +119,14 @@ object Model2File {
       } //end foreach word
 
       //print topic				
-      writer.write("Topic " + k + "th:\n");
+      writer.write("Topic " + k + "th:\n")
       wordsProbsList = wordsProbsList.sortWith(_._2 > _._2)
 
       for (i <- 0 until topwords) {
         if (data.localDict.contains(wordsProbsList(i)._1)) {
           val word = data.localDict.getWord(wordsProbsList(i)._1)
 
-          writer.write("\t" + word + " " + wordsProbsList(i)._2 + "\n");
+          writer.write("\t" + word + " " + wordsProbsList(i)._2 + "\n")
         }
       }
     } //end foreach topic			
@@ -127,6 +158,10 @@ object Model2File {
     if (model.twords > 0) {
       if (!saveModelTwords(model.dir + File.separator + "output" + File.separator + modelName + model.twordsSuffix, model.twords, model.K, model.V, model.phi, model.data))
         return false
+    }
+
+    if (!createKnowlegdeSource(model.dir + File.separator + "output" + File.separator + modelName + "-ks.dat", model.phi, model.K, model.V, model.data)) {
+      return false
     }
     return true
   }

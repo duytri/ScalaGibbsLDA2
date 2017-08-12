@@ -11,7 +11,7 @@ import main.java.commons.cli.UnrecognizedOptionException
 import main.scala.obj.Parameter
 import main.scala.helper.Utils
 
-object ScalaGibbsLDA {
+object ScalaGibbsLDA2 {
   def main(args: Array[String]): Unit = {
     println("Current directory: " + System.getProperty("user.dir"))
     println("#################### Gibbs sampling LDA ####################")

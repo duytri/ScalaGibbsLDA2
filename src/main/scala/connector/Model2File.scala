@@ -77,7 +77,7 @@ object Model2File {
         if (data.localDict.contains(wordsProbsList(i)._1)) {
           val word = data.localDict.getWord(wordsProbsList(i)._1)
 
-          writer.write(" " + word + " " + (wordsProbsList(i)._2 * 100000).round.toString)
+          writer.write(" " + word + " " + (wordsProbsList(i)._2 * V).round.toString)
         }
       }
       writer.write("\n")
